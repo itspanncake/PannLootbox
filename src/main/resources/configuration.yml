@@ -1,0 +1,17 @@
+########################################################################
+#      ____                   _                _   _                   #
+#     |  _ \ __ _ _ __  _ __ | |    ___   ___ | |_| |__   _____  __    #
+#     | |_) / _` | '_ \| '_ \| |   / _ \ / _ \| __| '_ \ / _ \ \/ /    #
+#     |  __/ (_| | | | | | | | |__| (_) | (_) | |_| |_) | (_) >  <     #
+#     |_|   \__,_|_| |_|_| |_|_____\___/ \___/ \__|_.__/ \___/_/\_\    #
+#                                                                      #
+#     This is the default configuration file of PannLootbox plugin     #
+#   Please note, If you don't know what a value does, don't touch it.  #
+########################################################################
+
+# This is the language used for plugin messages.
+# You can modify or create your own language file in the plugin's ‘lang’ folder.
+language: "en"
+
+# PLEASE DONT TOUCH THIS MANUALLY
+config-version: 1
