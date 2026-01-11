@@ -1,6 +1,3 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-import net.minecrell.pluginyml.paper.PaperPluginDescription
-
 plugins {
     id("java")
     alias(libs.plugins.shadowJar)
@@ -46,4 +43,5 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
 }
