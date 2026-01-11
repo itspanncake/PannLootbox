@@ -17,7 +17,6 @@ repositories {
 
 dependencies {
     compileOnly(libs.paper)
-    compileOnly(libs.smartInvs)
 
     implementation(libs.boostedYaml)
 }
