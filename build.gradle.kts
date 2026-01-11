@@ -35,3 +35,15 @@ paper {
         // No perms at the moment :3
     }
 }
+
+tasks {
+    shadowJar {
+        archiveClassifier.set("")
+        relocate("dev.dejvokep.boostedyaml", "fr.panncake.lootbox.libs")
+
+        minimize()
+    }
+
+    build {
+        dependsOn(shadowJar)
+}
