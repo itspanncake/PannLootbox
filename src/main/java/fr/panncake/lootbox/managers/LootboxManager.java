@@ -7,7 +7,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public final class LootboxManager {
@@ -20,25 +19,24 @@ public final class LootboxManager {
 
     public static ItemStack createLootbox(String id) {
         YamlDocument lootbox = lootbox();
-        if (!lootbox.contains(id)) return null;
+        String materialName = lootbox.getString(id + ".material");
+        if (materialName == null) return null;
 
-        Material lootboxMaterial = Material.matchMaterial(lootbox.getString(id + ".material"));
-        if (lootboxMaterial == null || !lootboxMaterial.isBlock() || (lootboxMaterial != Material.CHEST && lootboxMaterial != Material.BARREL)) {
-            plugin.logger.warn("The lootbox {} does not have a valid material configured or is not supported.", lootboxMaterial);
-            return null;
-        }
+        Material material = Material.matchMaterial(materialName);
+        if (material == null || !material.isBlock()) return null;
 
-        ItemStack lbItem = new ItemStack(lootboxMaterial);
-        ItemMeta lbMeta = lbItem.getItemMeta();
+        ItemStack item = new ItemStack(material);
+        item.editMeta(meta -> {
+            meta.displayName(MiniMessage.miniMessage().deserialize(id)
+                    .decoration(TextDecoration.ITALIC, false));
 
-        // TODO: Add more lootbox customization options
-        lbMeta.displayName(MiniMessage.miniMessage().deserialize(id).decorate(TextDecoration.ITALIC.withState(TextDecoration.State.FALSE).decoration()));
+            meta.getPersistentDataContainer().set(
+                    new NamespacedKey(plugin, "lootbox"),
+                    PersistentDataType.STRING,
+                    id
+            );
+        });
 
-        NamespacedKey key = new NamespacedKey(plugin, "lootbox");
-        lbMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id);
-
-        lbItem.setItemMeta(lbMeta);
-
-        return lbItem;
+        return item;
     }
 }

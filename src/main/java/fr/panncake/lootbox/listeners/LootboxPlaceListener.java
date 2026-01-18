@@ -23,32 +23,29 @@ public class LootboxPlaceListener implements Listener {
 
     private final PannLootbox plugin = PannLootbox.getInstance();
 
-    @EventHandler
     public void onLootboxPlace(BlockPlaceEvent e) {
         ItemStack item = e.getItemInHand();
         if (!item.hasItemMeta()) return;
 
         ItemMeta meta = item.getItemMeta();
         NamespacedKey key = new NamespacedKey(plugin, "lootbox");
-        if (!meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) return;
-
         String lootboxId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+
         if (lootboxId == null) return;
 
         YamlDocument lootbox = LootboxManager.lootbox();
-        if (!lootbox.contains(lootboxId) || !lootbox.contains(lootboxId + ".loots")) return;
-
-        if (!(e.getBlockPlaced().getState() instanceof InventoryHolder inv)) return;
-        Inventory chestInv = inv.getInventory();
-
         List<?> loots = lootbox.getList(lootboxId + ".loots");
+        if (loots == null || loots.isEmpty()) return;
+
+        if (!(e.getBlockPlaced().getState() instanceof InventoryHolder holder)) return;
+
+        Inventory chestInv = holder.getInventory();
         Random random = new Random();
 
         for (Object obj : loots) {
             if (!(obj instanceof Map<?, ?> lootMap)) continue;
 
-            String lootItemName = (String) lootMap.get("item");
-            Material lootMaterial = Material.matchMaterial(lootItemName);
+            Material lootMaterial = Material.matchMaterial(String.valueOf(lootMap.get("item")));
             if (lootMaterial == null) continue;
 
             int chance = (lootMap.get("chance") instanceof Number n) ? n.intValue() : 0;
@@ -57,16 +54,21 @@ public class LootboxPlaceListener implements Listener {
             if (random.nextInt(100) < chance) {
                 ItemStack loot = new ItemStack(lootMaterial, amount);
 
+                if (chestInv.firstEmpty() == -1) break;
+
                 int slot;
+                int attempts = 0;
                 do {
                     slot = random.nextInt(chestInv.getSize());
-                } while (chestInv.getItem(slot) != null);
+                    attempts++;
+                } while (chestInv.getItem(slot) != null && attempts < 30);
+
+                if (chestInv.getItem(slot) != null) slot = chestInv.firstEmpty();
 
                 chestInv.setItem(slot, loot);
-
-                plugin.logger.info("Lootbox {} placed: Loot={}, Chance={}%, Amount={} at slot {}",
-                        lootboxId, lootItemName, chance, amount, slot);
             }
         }
+
+        e.getBlockPlaced().getState().update(true);
     }
 }
