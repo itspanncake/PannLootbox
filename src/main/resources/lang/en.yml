@@ -14,3 +14,7 @@
 reload:
   reloading: "<gray>Reloading plugin configurations..."
   reloaded: "<green>Plugin reloaded successfully!"
+
+commands:
+  incorrectUsage: "<red>Incorrect command usage! Please try with <white>/lootbox help</white>!"
+  noConsole: "<red>Only a player can do this!"
