@@ -4,6 +4,7 @@ import org.gradle.kotlin.dsl.register
 
 plugins {
     id("java")
+    `maven-publish`
     alias(libs.plugins.shadowJar)
     alias(libs.plugins.pluginYml)
     alias(libs.plugins.server)
@@ -23,32 +24,41 @@ dependencies {
     implementation(libs.boostedYaml)
 }
 
-tasks {
-    shadowJar {
-        archiveClassifier.set("")
-        relocate("dev.dejvokep.boostedyaml", "fr.panncake.lootbox.libs")
-
-        minimize()
-    }
-
-    build {
-        dependsOn(shadowJar)
-    }
-}
-
-tasks.register<LaunchMinecraftServerTask>("server") {
-    dependsOn("shadowJar")
-
-    doFirst {
-        copy {
-            val jarName = tasks.shadowJar.get().archiveFileName.get()
-            from(layout.buildDirectory.file("libs/$jarName"))
-            into(layout.buildDirectory.asFile.get().resolve("MinecraftServer/plugins"))
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifact(tasks.named("shadowJar")) {
+                classifier = ""
+            }
+            groupId = "fr.panncake"
+            artifactId = "lootbox"
+            version = project.version.toString()
         }
     }
 
-    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper("1.21.5"))
-    agreeEula.set(true)
+    repositories {
+        maven {
+            name = "EuropawsArtifactory"
+            url = uri("https://repo.europaws.eu/artifactory/plugins/")
+
+            val user: String? = findProperty("artifactory_user") as? String
+            val pass: String? = findProperty("artifactory_password") as? String
+
+            if (user != null && pass != null) {
+                credentials {
+                    username = user
+                    password = pass
+                }
+            }
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 paper {
@@ -72,4 +82,42 @@ paper {
             default = BukkitPluginDescription.Permission.Default.OP
         }
     }
+}
+
+tasks {
+    shadowJar {
+        archiveClassifier.set("")
+
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        configurations = listOf(project.configurations.compileClasspath.get())
+
+        mergeServiceFiles()
+
+        manifest {
+            attributes(
+                "Implementation-Title" to "PannLootbox",
+                "Implementation-Version" to version
+            )
+        }
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+}
+
+tasks.register<LaunchMinecraftServerTask>("server") {
+    dependsOn("shadowJar")
+
+    doFirst {
+        copy {
+            val jarName = tasks.shadowJar.get().archiveFileName.get()
+            from(layout.buildDirectory.file("libs/$jarName"))
+            into(layout.buildDirectory.asFile.get().resolve("MinecraftServer/plugins"))
+        }
+    }
+
+    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper("1.21.5"))
+    agreeEula.set(true)
 }
