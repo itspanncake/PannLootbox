@@ -9,9 +9,9 @@
 #   Please note, If you don't know what a value does, don't touch it.  #
 ########################################################################
 
-# This is the language used for plugin messages.
-# You can modify or create your own language file in the plugin's ‘lang’ folder.
-language: "en"
+# The prefix is used for all plugin messages
+# A space at the end is not necessary.
+plugin-prefix: "<gradient:#54b5ff:#765eff><b>[PannLootbox] <dark_gray><b>»"
 
 # PLEASE DONT TOUCH THIS MANUALLY
 config-version: 1
