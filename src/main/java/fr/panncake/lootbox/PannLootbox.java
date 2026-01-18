@@ -1,9 +1,13 @@
-package fr.panncake.pannlootbox;
+package fr.panncake.lootbox;
 
-import fr.panncake.pannlootbox.managers.ConfigManager;
+import fr.panncake.lootbox.commands.PluginCommands;
+import fr.panncake.lootbox.managers.ConfigManager;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class PannLootbox extends JavaPlugin {
 
@@ -19,6 +23,7 @@ public class PannLootbox extends JavaPlugin {
         instance = this;
 
         this.configManager = new ConfigManager(this);
+        registerCommands();
 
         logger.info("PannLootbox has been enabled!");
     }
@@ -31,4 +36,14 @@ public class PannLootbox extends JavaPlugin {
     public ConfigManager getConfigManager() { return this.configManager; }
 
     public static PannLootbox getInstance() { return instance; }
+
+    private void registerCommands() {
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            commands.registrar().register(
+                    PluginCommands.register(),
+                    "Contains main commands of the plugin",
+                    List.of("lb", "pannlootbox", "pannlb")
+            );
+        });
+    }
 }

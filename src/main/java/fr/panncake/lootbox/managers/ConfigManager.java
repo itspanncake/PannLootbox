@@ -1,8 +1,8 @@
-package fr.panncake.pannlootbox.managers;
+package fr.panncake.lootbox.managers;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
-import fr.panncake.pannlootbox.PannLootbox;
-import fr.panncake.pannlootbox.config.YamlConfig;
+import fr.panncake.lootbox.PannLootbox;
+import fr.panncake.lootbox.config.YamlConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,24 +42,25 @@ public final class ConfigManager {
 
     private void loadLangConfig() {
         String langCode = getConfig().getString("language", "en");
-        String resourcePath = "lang/" + langCode + ".yml";
+        File langFile = new File(plugin.getDataFolder(), "lang/" + langCode + ".yml");
 
-        InputStream defaults = plugin.getResource(resourcePath);
-        if (defaults == null) {
-            plugin.logger.warn("Lang '{}' not found, fallback to 'en.yml'", resourcePath);
-            resourcePath = "lang/en.yml";
-            defaults = requireResource(resourcePath);
+        InputStream defaults = plugin.getResource("lang/" + langCode + ".yml");
+
+        if (!langFile.exists()) {
+            if (defaults == null) {
+                plugin.logger.warn("Lang '{}' not found in JAR, fallback to 'en.yml'", langCode);
+                langFile = new File(plugin.getDataFolder(), "lang/en.yml");
+                defaults = requireResource("lang/en.yml");
+            } else {
+                langFile.getParentFile().mkdirs();
+            }
         }
 
         try {
-            langConfig = new YamlConfig(
-                    new File(plugin.getDataFolder(), resourcePath),
-                    defaults,
-                    YamlConfig.none()
-            );
+            langConfig = new YamlConfig(langFile, defaults, YamlConfig.none());
             langConfig.load();
         } catch (IOException e) {
-            plugin.logger.error("Failed to load lang file '{}'", resourcePath, e);
+            plugin.logger.error("Failed to load lang file '{}'", langFile.getName(), e);
         }
     }
 

@@ -1,4 +1,4 @@
-package fr.panncake.pannlootbox.config;
+package fr.panncake.lootbox.config;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
