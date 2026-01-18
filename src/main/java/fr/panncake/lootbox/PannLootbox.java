@@ -1,7 +1,9 @@
 package fr.panncake.lootbox;
 
 import fr.panncake.lootbox.commands.PluginCommands;
+import fr.panncake.lootbox.listeners.LootboxPlaceListener;
 import fr.panncake.lootbox.managers.ConfigManager;
+import fr.panncake.lootbox.managers.LootboxManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -24,6 +26,8 @@ public class PannLootbox extends JavaPlugin {
 
         this.configManager = new ConfigManager(this);
         registerCommands();
+
+        this.getServer().getPluginManager().registerEvents(new LootboxPlaceListener(), this);
 
         logger.info("PannLootbox has been enabled!");
     }
