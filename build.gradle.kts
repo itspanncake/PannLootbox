@@ -1,3 +1,5 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import dev.s7a.gradle.minecraft.server.tasks.LaunchMinecraftServerTask
 plugins {
     id("java")
     alias(libs.plugins.shadowJar)
@@ -18,21 +20,6 @@ dependencies {
     implementation(libs.boostedYaml)
 }
 
-paper {
-    name = "PannLootbox"
-    version = "${rootProject.version}"
-    apiVersion = "1.21"
-
-    website = "https://github.com/ItsPanncake/"
-    author = "ItsPanncake"
-
-    main = "fr.panncake.pannlootbox.PannLootbox"
-
-    permissions {
-        // No perms at the moment :3
-    }
-}
-
 tasks {
     shadowJar {
         archiveClassifier.set("")
@@ -43,5 +30,27 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
+}
+paper {
+    main = "${project.group}.PannLootbox"
+
+    generateLibrariesJson = true
+
+    apiVersion = "1.21"
+    version = "${project.version}"
+
+    authors = listOf("ItsPanncake")
+
+    permissions {
+        register("pannlootbox.*") {
+            childrenMap = mapOf(
+                "pannlootbox.commands.reload" to true
+            )
+        }
+        register("pannlootbox.commands.reload") {
+            description = "Allows you to reload the plugin"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
     }
 }
