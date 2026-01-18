@@ -1,9 +1,12 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import dev.s7a.gradle.minecraft.server.tasks.LaunchMinecraftServerTask
+import org.gradle.kotlin.dsl.register
+
 plugins {
     id("java")
     alias(libs.plugins.shadowJar)
     alias(libs.plugins.pluginYml)
+    alias(libs.plugins.server)
 }
 
 group = "fr.panncake.lootbox"
@@ -32,6 +35,22 @@ tasks {
         dependsOn(shadowJar)
     }
 }
+
+tasks.register<LaunchMinecraftServerTask>("server") {
+    dependsOn("shadowJar")
+
+    doFirst {
+        copy {
+            val jarName = tasks.shadowJar.get().archiveFileName.get()
+            from(layout.buildDirectory.file("libs/$jarName"))
+            into(layout.buildDirectory.asFile.get().resolve("MinecraftServer/plugins"))
+        }
+    }
+
+    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper("1.21.5"))
+    agreeEula.set(true)
+}
+
 paper {
     main = "${project.group}.PannLootbox"
 
