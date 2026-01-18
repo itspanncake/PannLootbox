@@ -10,3 +10,7 @@
 #                   All messages are in MiniMessage                    #
 #    Read more here: https://docs.papermc.io/adventure/minimessage/    #
 ########################################################################
+
+reload:
+  reloading: "<gray>Reloading plugin configurations..."
+  reloaded: "<green>Plugin reloaded successfully!"
