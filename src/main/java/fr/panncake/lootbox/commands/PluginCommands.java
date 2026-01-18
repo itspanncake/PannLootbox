@@ -21,6 +21,7 @@ public class PluginCommands {
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(ReloadCommand.register())
+                .then(GiveCommand.register())
                 .build();
     }
 
@@ -33,5 +34,10 @@ public class PluginCommands {
                 "<yellow>Running on:</yellow> <white>" + plugin.getServer().getVersion(),
                 "<gold>==============================="
         );
+    }
+
+    public static int incorrectUsage(final CommandContext<CommandSourceStack> ctx) {
+        MessagesManager.sendLang(ctx, "commands.incorrectUsage", true);
+        return Command.SINGLE_SUCCESS;
     }
 }
