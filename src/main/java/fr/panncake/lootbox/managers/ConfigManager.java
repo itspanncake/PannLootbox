@@ -83,14 +83,20 @@ public final class ConfigManager {
 
     public void reload() {
         try {
+            plugin.logger.info("Reloading configuration.yml");
             loadMainConfig();
             mainConfig.reload();
+            plugin.logger.info("Reloaded!");
 
+            plugin.logger.info("Reloading lang file");
             loadLangConfig();
             langConfig.reload();
+            plugin.logger.info("Reloaded!");
 
+            plugin.logger.info("Reloading lootboxes.yml");
             loadLootboxConfig();
             lootboxConfig.reload();
+            plugin.logger.info("Reloaded!");
         } catch (IOException e) {
             plugin.logger.error("Failed to reload configs", e);
         }
