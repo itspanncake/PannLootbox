@@ -14,6 +14,7 @@ public final class ConfigManager {
 
     private YamlConfig mainConfig;
     private YamlConfig langConfig;
+    private YamlConfig lootboxConfig;
 
     public ConfigManager(PannLootbox plugin) {
         this.plugin = plugin;
@@ -23,6 +24,7 @@ public final class ConfigManager {
     public void loadAll() {
         loadMainConfig();
         loadLangConfig();
+        loadLootboxConfig();
     }
 
     private void loadMainConfig() {
@@ -64,10 +66,31 @@ public final class ConfigManager {
         }
     }
 
+    private void loadLootboxConfig() {
+        String name = "lootboxes.yml";
+
+        try {
+            lootboxConfig = new YamlConfig(
+                    new File(plugin.getDataFolder(), name),
+                    requireResource(name),
+                    YamlConfig.none()
+            );
+            lootboxConfig.load();
+        } catch (IOException e) {
+            plugin.logger.error("Failed to load '{}'", name, e);
+        }
+    }
+
     public void reload() {
         try {
+            loadMainConfig();
             mainConfig.reload();
+
             loadLangConfig();
+            langConfig.reload();
+
+            loadLootboxConfig();
+            lootboxConfig.reload();
         } catch (IOException e) {
             plugin.logger.error("Failed to reload configs", e);
         }
@@ -79,6 +102,10 @@ public final class ConfigManager {
 
     public YamlDocument getLang() {
         return langConfig.get();
+    }
+
+    public YamlDocument getLootbox() {
+        return lootboxConfig.get();
     }
 
     private InputStream requireResource(String path) {

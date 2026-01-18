@@ -1,0 +1,16 @@
+exampleLootbox:
+  # The material that will be used for the creation
+  # Currently available: "CHEST" or "BARREL"
+  material: "CHEST"
+  # On 'true' allows the player to not open the container to collect loot.
+  clickToGet: false
+  # The time (in seconds) before the loot box disappears
+  # -1 cancels the disappearance of the box
+  disappearingTime: 30
+  loots:
+    - item: DIAMOND
+      chance: 50
+      amount: 1
+    - item: DIRT
+      chance: 80
+      amount: 32
