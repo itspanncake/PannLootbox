@@ -7,8 +7,6 @@ import fr.panncake.lootbox.PannLootbox;
 import fr.panncake.lootbox.managers.MessagesManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -20,26 +18,10 @@ public class PluginCommands {
         return Commands.literal("lootbox")
                 .executes(ctx -> {
                     MessagesManager.send(ctx, pluginInfo());
-
                     return Command.SINGLE_SUCCESS;
                 })
-                .then(Commands.literal("reload")
-                        .requires(ctx -> ctx.getSender().hasPermission("pannlootbox.commands.reload"))
-                        .executes(PluginCommands::executeReload)
-                )
+                .then(ReloadCommand.register())
                 .build();
-    }
-
-    private static int executeReload(final CommandContext<CommandSourceStack> ctx) {
-        MessagesManager.sendLang(ctx, "reload.reloading", true);
-        plugin.getConfigManager().reload();
-        MessagesManager.sendLang(ctx, "reload.reloaded", true);
-
-        if (ctx.getSource().getExecutor() instanceof Player player) {
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-        }
-
-        return Command.SINGLE_SUCCESS;
     }
 
     private static List<String> pluginInfo() {
