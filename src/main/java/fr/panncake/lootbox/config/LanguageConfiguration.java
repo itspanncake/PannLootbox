@@ -1,6 +1,8 @@
 package fr.panncake.lootbox.config;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
+import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -28,15 +30,18 @@ public final class LanguageConfiguration {
         File file = new File(plugin.getDataFolder(), path);
         if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
 
-        return YamlDocument.create(file, resource);
+        return YamlDocument.create(
+                file,
+                resource,
+                GeneralSettings.DEFAULT,
+                LoaderSettings.builder()
+                        .setAutoUpdate(true)
+                        .build()
+        );
     }
 
-    public String get(@NonNull String path) { return yaml.getString(path, "<red>Missing lang key: " + path); }
-    public String get(@NonNull String path, String def) { return yaml.getString(path, def); }
+    public String get(@NonNull String path) { return yaml.getString(path); }
     public List<String> getList(@NonNull String path) { return yaml.getStringList(path); }
-    public List<String> getList(@NonNull String path, List<String> def) {
-        List<String> list = yaml.getStringList(path);
-        return list.isEmpty() ? def : list;
-    }
+
     public void reload() throws Exception { yaml.reload(); }
 }

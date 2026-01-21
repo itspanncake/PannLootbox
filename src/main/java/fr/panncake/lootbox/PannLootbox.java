@@ -22,7 +22,7 @@ public class PannLootbox extends JavaPlugin {
     @Getter
     private PluginConfiguration configuration;
     @Getter
-    private LanguageConfiguration language;
+    private LanguageManager languageManager;
 
     @Override
     public void onEnable() {
@@ -30,7 +30,7 @@ public class PannLootbox extends JavaPlugin {
         instance = this;
 
         this.configuration = new PluginConfiguration(this);
-        this.language = new LanguageConfiguration(this, configuration.get("language", "en"));
+        this.languageManager = new LanguageManager(this, configuration.getLanguage());
 
         registerCommands();
 

@@ -1,22 +1,19 @@
 package fr.panncake.lootbox.managers;
 
-import com.mojang.brigadier.context.CommandContext;
 import fr.panncake.lootbox.PannLootbox;
 import fr.panncake.lootbox.config.LanguageConfiguration;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"UnstableApiUsage", "unused"})
+@SuppressWarnings({"unused"})
 public final class MessagesManager {
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    private static final LanguageConfiguration LANG = PannLootbox.getInstance().getLanguage();
+    private static final LanguageConfiguration LANG = PannLootbox.getInstance().getLanguageManager().getCurrent();
 
     private MessagesManager() {}
 
@@ -86,9 +83,7 @@ public final class MessagesManager {
         public void send() {
             if (audience == null) return;
 
-            if (message != null) {
-                sendMessage(audience, message, defaultMessage, placeholders, usePrefix);
-            }
+            sendMessage(audience, message, defaultMessage, placeholders, usePrefix);
 
             if (messageList != null && !messageList.isEmpty()) {
                 sendList(audience, messageList, defaultList, placeholders, usePrefix);
