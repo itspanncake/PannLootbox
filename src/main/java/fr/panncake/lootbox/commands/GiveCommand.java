@@ -11,6 +11,9 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
+@SuppressWarnings("UnstableApiUsage")
 public class GiveCommand {
 
     private static final PannLootbox plugin = PannLootbox.getInstance();
@@ -34,9 +37,21 @@ public class GiveCommand {
                                     if (lootbox != null) {
                                         player.getInventory().addItem(lootbox);
                                     }
+                                } else {
+                                    MessagesManager.builder()
+                                            .to(ctx.getSource().getExecutor())
+                                            .toConfig("commands.lootbox.unknownLootbox")
+                                            .defaults("<red>The lootbox <white>{LOOTBOX}</white>does not exist!")
+                                            .placeholders(Map.of("LOOTBOX", lootboxId))
+                                            .prefixed()
+                                            .send();
                                 }
                             } else {
-                                MessagesManager.sendLang(ctx, "commands.noConsole", false);
+                                MessagesManager.builder()
+                                        .to(ctx.getSource().getExecutor())
+                                        .toConfig("commands.noConsole")
+                                        .defaults("<red>Only a player can do this!")
+                                        .send();
                             }
 
                             return Command.SINGLE_SUCCESS;

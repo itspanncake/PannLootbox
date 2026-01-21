@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("UnstableApiUsage")
 public class ReloadCommand {
 
     private static final PannLootbox plugin = PannLootbox.getInstance();
@@ -17,13 +18,23 @@ public class ReloadCommand {
         return Commands.literal("reload")
                 .requires(ctx -> ctx.getSender().hasPermission("pannlootbox.commands.reload"))
                 .executes(ctx -> {
-                    MessagesManager.sendLang(ctx, "reload.reloading", true);
-                    plugin.logger.info("PannLootbox plugin is now reloading...");
+                    MessagesManager.builder()
+                            .to(ctx.getSource().getExecutor())
+                            .toConfig("reload.reloading")
+                            .defaults("<gray>Reloading plugin configurations...")
+                            .prefixed()
+                            .send();
+                    plugin.getPluginLogger().info("PannLootbox plugin is now reloading...");
 
                     PannLootbox.getInstance().getConfigManager().reload();
 
-                    plugin.logger.info("PannLootbox plugin reloaded successfully!");
-                    MessagesManager.sendLang(ctx, "reload.reloaded", true);
+                    plugin.getPluginLogger().info("PannLootbox plugin reloaded successfully!");
+                    MessagesManager.builder()
+                            .to(ctx.getSource().getExecutor())
+                            .toConfig("reload.reloaded")
+                            .defaults("<green>Plugin reloaded successfully!")
+                            .prefixed()
+                            .send();
 
                     if (ctx.getSource().getExecutor() instanceof Player player) {
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);

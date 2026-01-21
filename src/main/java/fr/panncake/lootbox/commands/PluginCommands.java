@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.Commands;
 
 import java.util.List;
 
+@SuppressWarnings("UnstableApiUsage")
 public class PluginCommands {
 
     private static final PannLootbox plugin = PannLootbox.getInstance();
@@ -17,7 +18,10 @@ public class PluginCommands {
     public static LiteralCommandNode<CommandSourceStack> register() {
         return Commands.literal("lootbox")
                 .executes(ctx -> {
-                    MessagesManager.send(ctx, pluginInfo());
+                    MessagesManager.builder()
+                            .to(ctx.getSource().getExecutor())
+                            .toMessageList(pluginInfo())
+                            .send();
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(ReloadCommand.register())
@@ -37,7 +41,11 @@ public class PluginCommands {
     }
 
     public static int incorrectUsage(final CommandContext<CommandSourceStack> ctx) {
-        MessagesManager.sendLang(ctx, "commands.incorrectUsage", true);
+        MessagesManager.builder()
+                .to(ctx.getSource().getExecutor())
+                .toConfig("commands.incorrectUsage")
+                .defaults("<red>Incorrect command usage! Please try with <white>/lootbox help</white>!")
+                .send();
         return Command.SINGLE_SUCCESS;
     }
 }
