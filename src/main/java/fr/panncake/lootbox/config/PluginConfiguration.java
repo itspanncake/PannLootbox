@@ -13,44 +13,38 @@ import java.io.InputStream;
 public final class PluginConfiguration {
 
     private static final String FILE_NAME = "configuration.yml";
-
     private final YamlDocument yaml;
 
     public PluginConfiguration(@NonNull JavaPlugin plugin) {
-        this.yaml = loadYaml(plugin);
+        this.yaml = load(plugin);
     }
 
     @SneakyThrows
-    private YamlDocument loadYaml(JavaPlugin plugin) {
+    private YamlDocument load(JavaPlugin plugin) {
         InputStream resource = plugin.getResource(FILE_NAME);
-        if (resource == null) {
-            throw new IllegalStateException("Missing resource: " + FILE_NAME);
-        }
+        if (resource == null) throw new IllegalStateException("Missing configuration resource: " + FILE_NAME);
 
-        File dataFolder = plugin.getDataFolder();
-        if (!dataFolder.exists()) dataFolder.mkdirs();
+        File file = new File(plugin.getDataFolder(), FILE_NAME);
+        if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
 
-        return YamlDocument.create(
-                new File(dataFolder, FILE_NAME),
-                resource
-        );
+        return YamlDocument.create(file, resource);
     }
 
-    public void save() {
-        try {
-            yaml.save();
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to save configuration.yml", e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T get(@NonNull String path, T def) {
-        return (T) yaml.get(path, def);
+    public <T> Object get(@NonNull String path, T def) {
+        return yaml.get(path, def);
     }
 
     public void set(@NonNull String path, Object value) {
         yaml.set(path, value);
         save();
     }
+
+    public void save() {
+        try { yaml.save(); }
+        catch (Exception e) { throw new IllegalStateException("Failed to save configuration.yml", e); }
+    }
+
+    public void reload() throws Exception { yaml.reload(); }
+
+    public String getLanguage() { return yaml.getString("language", "en"); }
 }
