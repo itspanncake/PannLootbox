@@ -77,11 +77,16 @@ paper {
     permissions {
         register("pannlootbox.*") {
             childrenMap = mapOf(
-                "pannlootbox.commands.reload" to true
+                "pannlootbox.commands.reload" to true,
+                "pannlootbox.commands.give" to true
             )
         }
         register("pannlootbox.commands.reload") {
             description = "Allows you to reload the plugin"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("pannlootbox.commands.give") {
+            description = "Allows you to give any lootbox"
             default = BukkitPluginDescription.Permission.Default.OP
         }
     }
