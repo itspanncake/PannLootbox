@@ -11,13 +11,35 @@
 #    Read more here: https://docs.papermc.io/adventure/minimessage/    #
 ########################################################################
 
-reload:
-  reloading: "<gray>Reloading plugin configurations..."
-  reloaded: "<green>Plugin reloaded successfully!"
-
+# All commands messages
 commands:
-  incorrectUsage: "<red>Incorrect command usage! Please try with <white>/lootbox help</white>!"
-  noConsole: "<red>Only a player can do this!"
-
-  lootbox:
+  # Messages for global errors
+  errors:
+    # The message when a console try to execute a player command
+    noConsole: "<red>Only a player can do this!"
+    # The message when a usage of a command is incorrect
+    incorrectUsage: "<red>Incorrect command usage! Please try with <white>/lootbox help</white>!"
+  # All messages for '/lootbox reload' command
+  reload:
+    # The message when the plugin is reloading
+    reloading: "<gray>Reloading plugin configurations..."
+    # The message when the plugin is reloaded
+    reloaded: "<green>Plugin reloaded successfully!"
+  # All messages for '/lootbox give' command
+  give:
+    # The message when a player try to get an unexisting lootbox
+    # Placeholders:
+    #  - {LOOTBOX} - Return the lootbox id
+    #  - {LOOTBOX_NAME} - Return the lootbox name (parsed)
+    #  - {LOOTBOX_MATERIAL} - Return the lootbox material (chest or barrel)
+    #  - {LOOTBOX_TYPE} - Return the lootbox type (container or click)
+    #  - {LOOTBOX_LOCATIONS} - Return the list of all locations
     unknownLootbox: "<red>The lootbox <white>{LOOTBOX}</white> does not exist!"
+    # The message when a player receive a lootbox
+    # Placeholders:
+    #  - {LOOTBOX} - Return the lootbox id
+    #  - {LOOTBOX_NAME} - Return the lootbox name (parsed)
+    #  - {LOOTBOX_MATERIAL} - Return the lootbox material (chest or barrel)
+    #  - {LOOTBOX_TYPE} - Return the lootbox type (container or click)
+    #  - {LOOTBOX_LOCATIONS} - Return the list of all locations
+    given: "<green>You have successfully received the <white>{LOOTBOX}</white> lootbox!"
