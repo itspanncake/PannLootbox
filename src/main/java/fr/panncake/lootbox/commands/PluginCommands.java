@@ -43,7 +43,7 @@ public class PluginCommands {
     public static int incorrectUsage(final CommandContext<CommandSourceStack> ctx) {
         MessagesManager.builder()
                 .to(ctx.getSource().getExecutor())
-                .toConfig("commands.incorrectUsage")
+                .toConfig("commands.errors.incorrectUsage")
                 .defaults("<red>Incorrect command usage! Please try with <white>/lootbox help</white>!")
                 .send();
         return Command.SINGLE_SUCCESS;
