@@ -21,6 +21,9 @@ repositories {
 dependencies {
     compileOnly(libs.paper)
 
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
     implementation(libs.boostedYaml)
 }
 
