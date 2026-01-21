@@ -1,0 +1,66 @@
+#########################################################################################
+# Example of a Lootbox configuration                                                    #
+# Currently, the plugin does not support ItemsAdder or Oraxen (but that's coming soon). #
+#                                                                                       #
+# For names, only MiniMessage is available                                              #
+# More here: https://docs.papermc.io/adventure/minimessage/                             #
+#########################################################################################
+
+# This is the id of lootbox
+# Used by the /lootbox give command
+lootbox-id: "exampleLootbox"
+
+# You have here the name of the item
+lootbox-name: "<gold><b>Example Lootbox"
+
+# The lore of given item
+# You can add as many lines as you want
+lootbox-lore:
+  - "First lootbox lore line"
+  - "Second lootbox lore line"
+
+# The material of lootbox item
+# FOR THE MOMENT, ONLY 'CHEST' OR 'BARREL' IS SUPPORTED
+lootbox-material: "CHEST"
+
+# The type of the lootbox
+# Available:
+#  - 'CONTAINER' -> The player must open the container to get loots
+#  - 'CLICK' -> The player just needs to click to get loots
+lootbox-type: "CONTAINER"
+
+# DON'T EDIT THIS MANUALLY
+# IT WILL BE AUTOMATICALLY MODIFIED BY THE PLUGIN
+lootbox-locations: []
+
+# Setting to true allows you to have an enchantment effect on the lootbox
+lootbox-glowing: false
+
+# Here you can configure loots
+lootbox-items:
+  '0':
+    # The material of the item
+    # You can find them all here: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+    material: "DIAMOND"
+    # The name of the item
+    display-name: "<blue><b>Hyper rare diamond"
+    # The lore of the item
+    lore:
+      - "<green>Only a god can get this diamond!"
+    # Here you can edit the chance to get the item
+    # It must be between 1 and 100
+    chance: 15
+    # The amount of the given item
+    # You can enter a single number or a random amount
+    # (e.g., '12-26' will give between 12 and 26 of this item)
+    amount: "1"
+    # Setting to true allows you to have an enchantment effect on the item
+    glowing: true
+  '1':
+    material: 'DIRT'
+    display-name: "<gray><b>Common dirt"
+    lore:
+      - "<green>Don't give this to players please"
+    chance: 90
+    amount: "15-30"
+    glowing: false

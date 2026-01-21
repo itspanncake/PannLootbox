@@ -3,7 +3,8 @@ package fr.panncake.lootbox;
 import fr.panncake.lootbox.commands.PluginCommands;
 import fr.panncake.lootbox.config.LanguageConfiguration;
 import fr.panncake.lootbox.config.PluginConfiguration;
-import fr.panncake.lootbox.listeners.LootboxPlaceListener;
+import fr.panncake.lootbox.lootbox.LootboxManager;
+import fr.panncake.lootbox.managers.LanguageManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@SuppressWarnings("UnstableApiUsage")
 public class PannLootbox extends JavaPlugin {
 
     @Getter
@@ -23,6 +25,8 @@ public class PannLootbox extends JavaPlugin {
     private PluginConfiguration configuration;
     @Getter
     private LanguageManager languageManager;
+    @Getter
+    private LootboxManager lootboxManager;
 
     @Override
     public void onEnable() {
@@ -32,9 +36,18 @@ public class PannLootbox extends JavaPlugin {
         this.configuration = new PluginConfiguration(this);
         this.languageManager = new LanguageManager(this, configuration.getLanguage());
 
-        registerCommands();
+        this.lootboxManager = new LootboxManager(this);
+        this.lootboxManager.reload();
 
-        this.getServer().getPluginManager().registerEvents(new LootboxPlaceListener(), this);
+        for (String lootboxId : lootboxManager.getLootboxes().keySet()) {
+            if (lootboxManager.getLootbox(lootboxId).isEmpty()) {
+                pluginLogger.error(" - Cannot load lootbox {}!", lootboxId);
+            } else {
+                pluginLogger.info(" - Lootbox loaded {}!", lootboxId);
+            }
+        }
+
+        registerCommands();
 
         this.pluginLogger.info("PannLootbox has been enabled!");
     }
@@ -48,7 +61,7 @@ public class PannLootbox extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(
                     PluginCommands.register(),
-                    "Contains main commands of the plugin",
+                    "Main command of the plugin",
                     List.of("lb", "pannlootbox", "pannlb")
             );
         });
