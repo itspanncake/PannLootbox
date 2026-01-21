@@ -1,8 +1,9 @@
 package fr.panncake.lootbox;
 
 import fr.panncake.lootbox.commands.PluginCommands;
+import fr.panncake.lootbox.config.LanguageConfiguration;
+import fr.panncake.lootbox.config.PluginConfiguration;
 import fr.panncake.lootbox.listeners.LootboxPlaceListener;
-import fr.panncake.lootbox.managers.ConfigManager;
 import fr.panncake.lootbox.managers.LootboxManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,14 +18,17 @@ public class PannLootbox extends JavaPlugin {
 
     public final Logger logger = LoggerFactory.getLogger("");
 
-    private ConfigManager configManager;
+    private PluginConfiguration configuration;
+    private LanguageConfiguration language;
 
     @Override
     public void onEnable() {
         logger.info("Enabling PannLootbox v{}", getPluginMeta().getVersion());
         instance = this;
 
-        this.configManager = new ConfigManager(this);
+        this.configuration = new PluginConfiguration(this);
+        this.language = new LanguageConfiguration(this, configuration.get("language", "en"));
+
         registerCommands();
 
         this.getServer().getPluginManager().registerEvents(new LootboxPlaceListener(), this);
