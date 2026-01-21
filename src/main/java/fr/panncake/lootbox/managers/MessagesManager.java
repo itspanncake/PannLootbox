@@ -7,8 +7,10 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({"UnstableApiUsage", "unused"})
 public final class MessagesManager {
@@ -18,49 +20,110 @@ public final class MessagesManager {
 
     private MessagesManager() {}
 
-    public static void send(Player player, String message) {
-        send(player, message, false);
+    public static Builder builder() {
+        return new Builder();
     }
-    public static void send(Player player, String message, String def) { send(player, message, def, false); }
-    public static void send(Player player, String message, boolean prefix) { send((Audience) player, message, prefix); }
-    public static void send(Player player, String message, String def, boolean prefix) { send((Audience) player, message, def, prefix); }
 
-    public static void send(CommandContext<CommandSourceStack> ctx, String message) { send(ctx.getSource().getExecutor(), message, false); }
-    public static void send(CommandContext<CommandSourceStack> ctx, String message, String def) { send(ctx.getSource().getExecutor(), message, def, false); }
-    public static void send(CommandContext<CommandSourceStack> ctx, String message, boolean prefix) { send(ctx.getSource().getExecutor(), message, prefix); }
-    public static void send(CommandContext<CommandSourceStack> ctx, String message, String def, boolean prefix) { send(ctx.getSource().getExecutor(), message, def, prefix); }
+    public static class Builder {
+        private Audience audience;
+        private String message;
+        private List<String> messageList;
+        private String defaultMessage;
+        private List<String> defaultList;
+        private boolean usePrefix = false;
+        private Map<String, String> placeholders;
 
-    public static void sendLang(Player player, String key) { sendLang(player, key, false); }
-    public static void sendLang(Player player, String key, String def) { sendLang(player, key, def, false); }
-    public static void sendLang(Player player, String key, boolean prefix) {
-        send(player, LANG.get(key), prefix);
+        public Builder to(Player player) {
+            this.audience = player;
+            return this;
+        }
+
+        public Builder to(Audience audience) {
+            this.audience = audience;
+            return this;
+        }
+
+        public Builder toMessage(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder toConfig(String path) {
+            this.message = LANG.get(path);
+            return this;
+        }
+
+        public Builder toMessageList(List<String> messages) {
+            this.messageList = messages;
+            return this;
+        }
+
+        public Builder toConfigList(String path) {
+            this.messageList = LANG.getList(path);
+            return this;
+        }
+
+        public Builder defaults(String def) {
+            this.defaultMessage = def;
+            return this;
+        }
+
+        public Builder defaults(List<String> defList) {
+            this.defaultList = defList;
+            return this;
+        }
+
+        public Builder placeholders(Map<String, String> placeholders) {
+            this.placeholders = placeholders;
+            return this;
+        }
+
+        public Builder prefixed() {
+            this.usePrefix = true;
+            return this;
+        }
+
+        public void send() {
+            if (audience == null) return;
+
+            if (message != null) {
+                sendMessage(audience, message, defaultMessage, placeholders, usePrefix);
+            }
+
+            if (messageList != null && !messageList.isEmpty()) {
+                sendList(audience, messageList, defaultList, placeholders, usePrefix);
+            }
+        }
+
+        private void sendMessage(Audience audience, String msg, String def, Map<String, String> placeholders, boolean prefix) {
+            msg = (msg == null || msg.isBlank()) ? def : msg;
+            if (msg == null || msg.isBlank()) return;
+
+            hasPlaceholders(audience, placeholders, prefix, msg);
+        }
+
+        private void sendList(Audience audience, List<String> messages, List<String> def, Map<String, String> placeholders, boolean prefix) {
+            if (messages == null || messages.isEmpty()) messages = def;
+            if (messages == null || messages.isEmpty()) return;
+
+            for (String msg : messages) {
+                if (msg == null || msg.isBlank()) continue;
+
+                hasPlaceholders(audience, placeholders, prefix, msg);
+            }
+        }
+
+        private void hasPlaceholders(Audience audience, Map<String, String> placeholders, boolean prefix, String msg) {
+            if (placeholders != null) {
+                for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                    msg = msg.replace("{" + entry.getKey() + "}", entry.getValue());
+                }
+            }
+
+            if (prefix) msg = MessagesManager.getPrefix() + msg;
+            audience.sendMessage(MINI_MESSAGE.deserialize(msg));
+        }
     }
-    public static void sendLang(Player player, String key, String def, boolean prefix) { send(player, LANG.get(key), def, prefix); }
-
-    public static void sendLang(CommandContext<CommandSourceStack> ctx, String key) { sendLang(ctx, key, false); }
-    public static void sendLang(CommandContext<CommandSourceStack> ctx, String key, String def) { sendLang(ctx, key, def, false); }
-    public static void sendLang(CommandContext<CommandSourceStack> ctx, String key, boolean prefix) { send(ctx, LANG.get(key), prefix); }
-    public static void sendLang(CommandContext<CommandSourceStack> ctx, String key, String def, boolean prefix) { send((Audience) ctx, LANG.get(key), def, prefix); }
-
-    public static void sendList(Player player, List<String> messages) { send(player, messages, false); }
-    public static void sendList(Player player, List<String> messages, List<String> def) { send(player, messages, def, false); }
-    public static void sendList(Player player, List<String> messages, boolean prefix) { send(player, messages, prefix); }
-    public static void sendList(Player player, List<String> messages, List<String> def, boolean prefix) { send(player, messages, def, prefix); }
-
-    public static void sendList(CommandContext<CommandSourceStack> ctx, List<String> messages) { send(ctx.getSource().getExecutor(), messages, false); }
-    public static void sendList(CommandContext<CommandSourceStack> ctx, List<String> messages, List<String> def) { send(ctx.getSource().getExecutor(), messages, def, false); }
-    public static void sendList(CommandContext<CommandSourceStack> ctx, List<String> messages, boolean prefix) { send(ctx.getSource().getExecutor(), messages, prefix); }
-    public static void sendList(CommandContext<CommandSourceStack> ctx, List<String> messages, List<String> def, boolean prefix) { send(ctx.getSource().getExecutor(), messages, def, prefix); }
-
-    public static void sendLangList(Player player, String key) { sendLangList(player, key, false); }
-    public static void sendLangList(Player player, String key, List<String> def) { sendLangList(player, key, def, false); }
-    public static void sendLangList(Player player, String key, boolean prefix) { send(player, LANG.getList(key), prefix); }
-    public static void sendLangList(Player player, String key, List<String> def, boolean prefix) { send(player, LANG.getList(key), def, prefix); }
-
-    public static void sendLangList(CommandContext<CommandSourceStack> ctx, String key) { sendLangList(ctx, key, false); }
-    public static void sendLangList(CommandContext<CommandSourceStack> ctx, String key, List<String> def) { sendLangList(ctx, key, false); }
-    public static void sendLangList(CommandContext<CommandSourceStack> ctx, String key, boolean prefix) { send(ctx.getSource().getExecutor(), LANG.getList(key), prefix); }
-    public static void sendLangList(CommandContext<CommandSourceStack> ctx, String key, List<String> def, boolean prefix) { send(ctx.getSource().getExecutor(), LANG.getList(key), prefix); }
 
     public static String getPrefix() {
         String rawPrefix = PannLootbox.getInstance()
@@ -75,38 +138,4 @@ public final class MessagesManager {
 
         return rawPrefix + "<reset>";
     }
-
-    private static void send(Audience audience, String message, boolean prefix) {
-        if (audience == null || message == null || message.isBlank()) return;
-        if (prefix) message = getPrefix() + message;
-        audience.sendMessage(MINI_MESSAGE.deserialize(message));
-    }
-
-    private static void send(Audience audience, String message, String def, boolean prefix) {
-        if (audience == null) return;
-        if (message == null || message.isBlank()) message = def;
-        if (prefix) message = getPrefix() + message;
-        audience.sendMessage(MINI_MESSAGE.deserialize(message));
-    }
-
-    private static void send(Audience audience, List<String> messages, boolean prefix) {
-        if (audience == null || messages == null || messages.isEmpty()) return;
-
-        messages.stream()
-                .filter(m -> m != null && !m.isBlank())
-                .map(m -> prefix ? getPrefix() + m : m)
-                .map(MINI_MESSAGE::deserialize)
-                .forEach(audience::sendMessage);
-    }
-    private static void send(Audience audience, List<String> messages, List<String> def, boolean prefix) {
-        if (audience == null) return;
-        if (messages == null || messages.isEmpty()) messages = def;
-
-        messages.stream()
-                .filter(m -> m != null && !m.isBlank())
-                .map(m -> prefix ? getPrefix() + m : m)
-                .map(MINI_MESSAGE::deserialize)
-                .forEach(audience::sendMessage);
-    }
-
 }
