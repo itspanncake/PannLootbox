@@ -18,3 +18,6 @@ reload:
 commands:
   incorrectUsage: "<red>Incorrect command usage! Please try with <white>/lootbox help</white>!"
   noConsole: "<red>Only a player can do this!"
+
+  lootbox:
+    unknownLootbox: "<red>The lootbox <white>{LOOTBOX}</white> does not exist!"
