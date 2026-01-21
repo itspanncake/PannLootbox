@@ -11,7 +11,11 @@
 
 # The prefix is used for all plugin messages
 # A space at the end is not necessary.
-plugin-prefix: "<gradient:#54b5ff:#765eff><b>[PannLootbox] <dark_gray><b>»"
+plugin-prefix: '<gradient:#54b5ff:#765eff><b>[PannLootbox] <dark_gray><b>»'
+
+# The language of the plugin
+# Currently, 'en' is the only valid option.
+language: 'en'
 
 # PLEASE DONT TOUCH THIS MANUALLY
 config-version: 1
