@@ -4,12 +4,14 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import fr.panncake.lootbox.PannLootbox;
-import fr.panncake.lootbox.managers.LootboxManager;
+import fr.panncake.lootbox.lootbox.LootboxBuilder;
 import fr.panncake.lootbox.managers.MessagesManager;
+import fr.panncake.lootbox.utils.PlaceholderUtils;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class GiveCommand {
                 .executes(PluginCommands::incorrectUsage)
                 .then(Commands.argument("lootbox", StringArgumentType.word())
                         .suggests((context, builder) -> {
-                            for (Object name : LootboxManager.lootbox().getRoot().getKeys()) {
+                            for (Object name : plugin.getLootboxManager().getLootboxes().keySet()) {
                                 builder.suggest(name.toString());
                             }
                             return builder.buildFuture();
@@ -32,15 +34,20 @@ public class GiveCommand {
                         .executes(ctx -> {
                             if (ctx.getSource().getSender() instanceof Player player) {
                                 String lootboxId = ctx.getArgument("lootbox", String.class);
-                                if (LootboxManager.lootbox().contains(lootboxId)) {
-                                    ItemStack lootbox = LootboxManager.createLootbox(lootboxId);
-                                    if (lootbox != null) {
-                                        player.getInventory().addItem(lootbox);
-                                    }
+                                if (plugin.getLootboxManager().getLootboxes().containsKey(lootboxId)) {
+                                    player.getInventory().addItem(LootboxBuilder.createItem(plugin.getLootboxManager().getLootboxes().get(lootboxId)));
+                                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                                    MessagesManager.builder()
+                                            .to(player)
+                                            .toConfig("commands.give.given")
+                                            .defaults("<green>You have successfully received the <white>{LOOTBOX}</white> lootbox!")
+                                            .placeholders(PlaceholderUtils.lootboxPlaceholders(plugin.getLootboxManager().getLootboxes().get(lootboxId)))
+                                            .prefixed()
+                                            .send();
                                 } else {
                                     MessagesManager.builder()
                                             .to(ctx.getSource().getExecutor())
-                                            .toConfig("commands.lootbox.unknownLootbox")
+                                            .toConfig("commands.give.unknownLootbox")
                                             .defaults("<red>The lootbox <white>{LOOTBOX}</white>does not exist!")
                                             .placeholders(Map.of("LOOTBOX", lootboxId))
                                             .prefixed()
@@ -49,7 +56,7 @@ public class GiveCommand {
                             } else {
                                 MessagesManager.builder()
                                         .to(ctx.getSource().getExecutor())
-                                        .toConfig("commands.noConsole")
+                                        .toConfig("commands.errors.noConsole")
                                         .defaults("<red>Only a player can do this!")
                                         .send();
                             }
